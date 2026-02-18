@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -26,6 +26,12 @@ import { Skeleton } from "@/components/ui/skeleton";
 import type { Decision } from "@/types";
 import type { ListDecisionsParams } from "@/api/decisions";
 
+const ASSIGNEE_OPTIONS = [
+  { value: "all", label: "All assignees" },
+  { value: "assignee-client", label: "Client" },
+  { value: "assignee-architect", label: "Architect" },
+];
+
 export interface DecisionListProps {
   decisions: Decision[];
   isLoading?: boolean;
@@ -52,11 +58,18 @@ export function DecisionList({
   emptyMessage = "No decisions found. Create one to get started.",
 }: DecisionListProps) {
   const navigate = useNavigate();
-  const [searchInput, setSearchInput] = useState("");
+  const [searchInput, setSearchInput] = useState(filters.search ?? "");
   const [showFilters, setShowFilters] = useState(false);
 
   const sortBy = (filters.sortBy ?? "updatedAt") as SortKey;
   const sortOrder = filters.sortOrder ?? "desc";
+
+  useEffect(() => {
+    const t = setTimeout(() => {
+      onFiltersChange({ ...filters, search: searchInput || undefined, page: 1 });
+    }, 300);
+    return () => clearTimeout(t);
+  }, [searchInput]); // eslint-disable-line react-hooks/exhaustive-deps -- only run when searchInput changes
 
   const handleSort = (key: SortKey) => {
     onFiltersChange({
@@ -168,6 +181,53 @@ export function DecisionList({
                   <SelectItem value="construction">Construction</SelectItem>
                 </SelectContent>
               </Select>
+              <Select
+                value={filters.assigneeId ?? "all"}
+                onValueChange={(v) =>
+                  onFiltersChange({
+                    ...filters,
+                    assigneeId: v === "all" ? undefined : v,
+                    page: 1,
+                  })
+                }
+              >
+                <SelectTrigger className="w-[130px]">
+                  <SelectValue placeholder="Assignee" />
+                </SelectTrigger>
+                <SelectContent>
+                  {ASSIGNEE_OPTIONS.map((o) => (
+                    <SelectItem key={o.value || "all"} value={o.value || "all"}>
+                      {o.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Input
+                type="date"
+                className="w-[130px]"
+                value={filters.fromDate ?? ""}
+                onChange={(e) =>
+                  onFiltersChange({
+                    ...filters,
+                    fromDate: e.target.value || undefined,
+                    page: 1,
+                  })
+                }
+                aria-label="From date"
+              />
+              <Input
+                type="date"
+                className="w-[130px]"
+                value={filters.toDate ?? ""}
+                onChange={(e) =>
+                  onFiltersChange({
+                    ...filters,
+                    toDate: e.target.value || undefined,
+                    page: 1,
+                  })
+                }
+                aria-label="To date"
+              />
               <Select
                 value={
                   filters.sortBy

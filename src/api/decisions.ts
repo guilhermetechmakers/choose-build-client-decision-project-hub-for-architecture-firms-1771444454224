@@ -23,6 +23,7 @@ export interface ListDecisionsParams {
   costImpactMax?: number;
   fromDate?: string;
   toDate?: string;
+  search?: string;
   sortBy?: "updatedAt" | "createdAt" | "title" | "costImpact" | "phase";
   sortOrder?: "asc" | "desc";
   page?: number;
@@ -49,6 +50,7 @@ export async function listDecisions(
     if (params.costImpactMax != null) search.set("costImpactMax", String(params.costImpactMax));
     if (params.fromDate) search.set("fromDate", params.fromDate);
     if (params.toDate) search.set("toDate", params.toDate);
+    if (params.search?.trim()) search.set("search", params.search.trim());
     if (params.sortBy) search.set("sortBy", params.sortBy);
     if (params.sortOrder) search.set("sortOrder", params.sortOrder);
     if (params.page != null) search.set("page", String(params.page));

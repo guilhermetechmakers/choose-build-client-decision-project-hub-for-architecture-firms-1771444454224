@@ -184,7 +184,13 @@ export function DecisionDetailPanel({
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const statusLabel =
-    decision.status === "changes_requested" ? "Change requested" : decision.status;
+    decision.status === "changes_requested"
+      ? "Rejected"
+      : decision.status === "approved"
+        ? "Approved"
+        : decision.status === "pending"
+          ? "Pending"
+          : "Draft";
 
   return (
     <Card className={cn("flex flex-1 flex-col overflow-hidden", className)}>

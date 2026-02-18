@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   Dialog,
@@ -13,6 +12,38 @@ import {
 import { Check, MessageCircle, RotateCcw, PenLine } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { DecisionStatus } from "@/types";
+
+/** Textarea with min height for comment/question inputs */
+function CommentInput({
+  id,
+  value,
+  onChange,
+  placeholder,
+  label,
+  "aria-label": ariaLabel,
+}: {
+  id: string;
+  value: string;
+  onChange: (v: string) => void;
+  placeholder: string;
+  label: string;
+  "aria-label"?: string;
+}) {
+  return (
+    <div className="space-y-2">
+      <Label htmlFor={id}>{label}</Label>
+      <textarea
+        id={id}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+        rows={3}
+        aria-label={ariaLabel ?? label}
+      />
+    </div>
+  );
+}
 
 export interface ApprovalControlsProps {
   decisionId: string;
@@ -37,17 +68,21 @@ export function ApprovalControls({
 }: ApprovalControlsProps) {
   const [changeDialogOpen, setChangeDialogOpen] = useState(false);
   const [questionDialogOpen, setQuestionDialogOpen] = useState(false);
+  const [approveDialogOpen, setApproveDialogOpen] = useState(false);
   const [changeComment, setChangeComment] = useState("");
   const [questionBody, setQuestionBody] = useState("");
+  const [approveComment, setApproveComment] = useState("");
   const [loading, setLoading] = useState<"approve" | "change" | "question" | null>(null);
 
   const isPending = status === "pending";
   const canAct = isPending && !disabled;
 
-  const handleApprove = async () => {
+  const handleApprove = async (comment?: string) => {
     setLoading("approve");
     try {
-      await onApprove(decisionId, undefined, eSignRequired);
+      await onApprove(decisionId, comment || undefined, eSignRequired);
+      setApproveComment("");
+      setApproveDialogOpen(false);
     } finally {
       setLoading(null);
     }
@@ -82,7 +117,7 @@ export function ApprovalControls({
       <Button
         size="default"
         disabled={!canAct || loading !== null}
-        onClick={handleApprove}
+        onClick={() => (eSignRequired ? setApproveDialogOpen(true) : handleApprove())}
         className="transition-transform hover:scale-[1.02] hover:shadow-md"
         aria-label="Approve this decision"
       >
@@ -96,6 +131,18 @@ export function ApprovalControls({
           <PenLine className="h-4 w-4 ml-2 opacity-80" aria-label="E-sign required" />
         )}
       </Button>
+      {!eSignRequired && (
+        <Button
+          size="default"
+          variant="secondary"
+          disabled={!canAct || loading !== null}
+          onClick={() => setApproveDialogOpen(true)}
+          className="transition-transform hover:scale-[1.02]"
+          aria-label="Approve with comment"
+        >
+          Approve with comment
+        </Button>
+      )}
       <Button
         variant="secondary"
         size="default"
@@ -127,14 +174,14 @@ export function ApprovalControls({
               Describe what needs to be changed. The team will be notified.
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-2 py-2">
-            <Label htmlFor="change-comment">Comment (required)</Label>
-            <Input
+          <div className="py-2">
+            <CommentInput
               id="change-comment"
+              label="Comment (required)"
               placeholder="What should be changed?"
               value={changeComment}
-              onChange={(e) => setChangeComment(e.target.value)}
-              className="min-h-[80px]"
+              onChange={setChangeComment}
+              aria-label="Comment for change request"
             />
           </div>
           <DialogFooter>
@@ -162,14 +209,14 @@ export function ApprovalControls({
               Your message will be added to the comment thread for this decision.
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-2 py-2">
-            <Label htmlFor="question-body">Question or comment</Label>
-            <Input
+          <div className="py-2">
+            <CommentInput
               id="question-body"
+              label="Question or comment"
               placeholder="Type your question..."
               value={questionBody}
-              onChange={(e) => setQuestionBody(e.target.value)}
-              className="min-h-[80px]"
+              onChange={setQuestionBody}
+              aria-label="Question or comment"
             />
           </div>
           <DialogFooter>
@@ -184,6 +231,40 @@ export function ApprovalControls({
               onClick={handleAskQuestion}
             >
               {loading === "question" ? "Sending…" : "Send"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={approveDialogOpen} onOpenChange={setApproveDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Approve decision</DialogTitle>
+            <DialogDescription>
+              {eSignRequired
+                ? "E-signature is required for this approval. Add an optional comment below."
+                : "Add an optional comment to this approval."}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-2">
+            <CommentInput
+              id="approve-comment"
+              label="Comment (optional)"
+              placeholder="Optional note..."
+              value={approveComment}
+              onChange={setApproveComment}
+              aria-label="Optional approval comment"
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="secondary" onClick={() => setApproveDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button
+              disabled={loading === "approve"}
+              onClick={() => handleApprove(approveComment.trim() || undefined)}
+            >
+              {loading === "approve" ? "Approving…" : eSignRequired ? "Approve & E-sign" : "Approve"}
             </Button>
           </DialogFooter>
         </DialogContent>

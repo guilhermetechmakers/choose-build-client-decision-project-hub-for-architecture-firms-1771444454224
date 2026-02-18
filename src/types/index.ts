@@ -124,3 +124,43 @@ export interface LoginSignup {
   created_at: string;
   updated_at: string;
 }
+
+/** files_and_drawings (DB: files_&_drawings or files_and_drawings) */
+export interface FilesAndDrawings {
+  id: string;
+  user_id: string;
+  title: string;
+  description?: string;
+  status: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export type FileAccessLevel = "client" | "contractor" | "internal";
+
+export interface FilePermission {
+  fileId: string;
+  folderId?: string;
+  client: boolean;
+  contractor: boolean;
+  internal: boolean;
+}
+
+export interface FileVersion {
+  id: string;
+  fileId: string;
+  version: number;
+  storagePath?: string;
+  thumbnailUrl?: string;
+  sizeBytes?: number;
+  createdAt: string;
+}
+
+export interface FileFolder {
+  id: string;
+  name: string;
+  parentId: string | null;
+  projectId?: string;
+  fileCount: number;
+  children?: FileFolder[];
+}
