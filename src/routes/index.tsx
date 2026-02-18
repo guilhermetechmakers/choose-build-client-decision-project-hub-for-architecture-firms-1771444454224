@@ -16,6 +16,7 @@ import { DecisionLogPage } from "@/pages/dashboard/decision-log";
 import { CreateDecisionPage } from "@/pages/dashboard/create-decision";
 import { MessagesPage } from "@/pages/dashboard/messages";
 import { FilesPage } from "@/pages/dashboard/files";
+import { FilesAndDrawingsPage } from "@/pages/FilesAndDrawings";
 import { MeetingsPage } from "@/pages/dashboard/meetings";
 import { TemplatesPage } from "@/pages/dashboard/templates";
 import { ReportsPage } from "@/pages/dashboard/reports";
@@ -64,6 +65,7 @@ export const router = createBrowserRouter([
       { path: "decisions/:decisionId", element: <DecisionLogPage /> },
       { path: "messages", element: <MessagesPage /> },
       { path: "files", element: <FilesPage /> },
+      { path: "files-and-drawings", element: <FilesAndDrawingsPage /> },
       { path: "meetings", element: <MeetingsPage /> },
       { path: "templates", element: <TemplatesPage /> },
       { path: "reports", element: <ReportsPage /> },
