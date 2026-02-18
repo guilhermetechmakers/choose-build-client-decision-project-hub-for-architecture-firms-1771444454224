@@ -22,23 +22,79 @@ export interface DecisionOption {
   title: string;
   description?: string;
   imageUrl?: string;
+  pdfUrl?: string;
   costDelta?: number;
   recommended?: boolean;
 }
 
+export type DecisionStatus = "draft" | "pending" | "approved" | "changes_requested";
+
 export interface Decision {
   id: string;
   projectId: string;
+  phase?: string;
+  assigneeId?: string;
+  assigneeName?: string;
   title: string;
   description?: string;
-  status: "draft" | "pending" | "approved" | "changes_requested";
+  status: DecisionStatus;
   options: DecisionOption[];
   version: number;
   publishedAt?: string;
   approvedAt?: string;
   approvedBy?: string;
+  costImpact?: number;
   createdAt: string;
   updatedAt: string;
+  lastActivityAt?: string;
+  thumbnailUrl?: string;
+}
+
+/** decision_log table (DB schema) */
+export interface DecisionLog {
+  id: string;
+  user_id: string;
+  title: string;
+  description?: string;
+  status: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface DecisionVersion {
+  id: string;
+  decisionId: string;
+  version: number;
+  snapshotUrl?: string;
+  publishedAt: string;
+  createdAt: string;
+}
+
+export interface AuditLogEntry {
+  id: string;
+  decisionId: string;
+  userId: string;
+  userName: string;
+  action: string;
+  details?: string;
+  createdAt: string;
+}
+
+export interface DecisionComment {
+  id: string;
+  decisionId: string;
+  userId: string;
+  userName: string;
+  body: string;
+  createdAt: string;
+  parentId?: string;
+}
+
+export interface RelatedItem {
+  id: string;
+  type: "drawing" | "task" | "meeting_note";
+  title: string;
+  url?: string;
 }
 
 export interface MessageThread {

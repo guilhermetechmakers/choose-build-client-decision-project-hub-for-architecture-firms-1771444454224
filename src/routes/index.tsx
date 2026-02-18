@@ -39,6 +39,7 @@ import { ErrorPage } from "@/pages/error";
 
 export const router = createBrowserRouter([
   { path: "/", element: <LandingPage /> },
+  { path: "/decision-log", element: <Navigate to="/dashboard/decisions" replace /> },
   { path: "/login", element: <LoginPage /> },
   { path: "/signup", element: <SignupPage /> },
   { path: "/password-reset", element: <PasswordResetRequestPage /> },
