@@ -113,3 +113,14 @@ export interface Template {
   type: "project" | "decision_set";
   updatedAt: string;
 }
+
+/** login_signup table (auth/session metadata); DB table may be named "login_/_signup" with RLS */
+export interface LoginSignup {
+  id: string;
+  user_id: string;
+  title: string;
+  description?: string;
+  status: string;
+  created_at: string;
+  updated_at: string;
+}

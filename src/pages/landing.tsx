@@ -36,7 +36,7 @@ export function LandingPage() {
           <span className="text-xl font-semibold text-primary">Choose & Build</span>
           <div className="flex items-center gap-4">
             <Link to="/help"><Button variant="ghost">Help</Button></Link>
-            <Link to="/login"><Button variant="secondary">Sign in</Button></Link>
+            <Link to="/login-/-signup"><Button variant="secondary">Sign in</Button></Link>
             <Link to="/signup"><Button>Get started</Button></Link>
           </div>
         </nav>

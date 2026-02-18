@@ -4,6 +4,7 @@ import { DashboardLayout } from "@/components/layout/dashboard-layout";
 import { LandingPage } from "@/pages/landing";
 import { LoginPage } from "@/pages/auth/login";
 import { SignupPage } from "@/pages/auth/signup";
+import { LoginSignupPage } from "@/pages/Login/Signup";
 import { PasswordResetRequestPage } from "@/pages/auth/password-reset-request";
 import { PasswordResetPage } from "@/pages/auth/password-reset";
 import { EmailVerificationPage } from "@/pages/auth/email-verification";
@@ -42,6 +43,7 @@ export const router = createBrowserRouter([
   { path: "/decision-log", element: <Navigate to="/dashboard/decisions" replace /> },
   { path: "/login", element: <LoginPage /> },
   { path: "/signup", element: <SignupPage /> },
+  { path: "/login-/-signup", element: <LoginSignupPage /> },
   { path: "/password-reset", element: <PasswordResetRequestPage /> },
   { path: "/password-reset/confirm", element: <PasswordResetPage /> },
   { path: "/verify-email", element: <EmailVerificationPage /> },
